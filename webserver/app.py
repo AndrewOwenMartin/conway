@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, abort
+from flask import Flask, jsonify, render_template
 from flask_cors import CORS
 import datetime
 
@@ -55,8 +55,17 @@ users = {
 }
 
 
+@app.route("/template-test")
+@app.route("/template-test/<name>")
+def template_test(name="Andy"):
+    return render_template("hello.html", name=name, users=users)
+
+
 @app.route("/user/<user_id>")
 def user(user_id):
+
+    if user_id == "horse":
+        return jsonify("I will not stand for this horsey nonsense."), 418
 
     try:
         user_id_int = int(user_id)

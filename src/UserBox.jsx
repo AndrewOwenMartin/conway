@@ -24,47 +24,41 @@ export const useUserBox = () => {
         setUserInfo(null)
     }
 
-    useEffect(() => {
+    useEffect(
+        () => {
 
-        if (fetchComplete === true) {
-            console.log("fetch is complete, nothing to do")
-            return null
-        }
+            if (fetchComplete === true) {
+                console.log("fetch is complete, nothing to do")
+                return null
+            }
 
-        if (url === null) {
-            console.log("no input, so no url")
-            setIsLoaded(true)
-            setError("Nothing entered")
-            return null
-        }
+            if (url === null) {
+                console.log("no input, so no url")
+                setIsLoaded(true)
+                setError("Nothing entered")
+                return null
+            }
 
-        fetch(url)
-            .then(
-                (response) => {
-                    if (response.status === 400 || response.status === 404) {
+            fetch(url)
+                .then(
+                    (response) => {
                         response.json().then(
                             (result) => {
-                                console.log("fail 400", { result })
                                 setIsLoaded(true);
-                                setError(result);
+                                if (response.status === 400 || response.status === 404 || response.status === 418) {
+                                    setUserInfo(null);
+                                    setError(result);
+                                } else {
+                                    setUserInfo(result);
+                                    setError(null)
+                                }
                             }
                         )
                     }
-                    else {
-                        response.json().then(
-                            (result) => {
-                                console.log("success", { result, type: result.type })
-                                setIsLoaded(true);
-                                setUserInfo(result);
-                                setError(null)
-                            }
-                        )
-                    }
-
-
-                }
-            )
-    }, [fetchComplete])
+                )
+        },
+        [fetchComplete]
+    )
 
     return {
         userIdInput,
